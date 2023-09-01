@@ -72,4 +72,13 @@ def model_apply():
 keyboard.add_hotkey('s',image_capture)
 keyboard.wait('s')
 model_apply()
+a = objects_ids.index(58)#v listu object_ids hleda urcite cislo a vypise jeho index
+print(a)
+x,y=objects_centers[a]# v listu object centers hleda pro dany index hodnoty
+print(x,y)
+center_line = int(img_width/2)# x souradnice primky zobrazujici stred
+object_deviation = center_line-x #odchylka objektu od stredu obrazovky
+print('deviation = ',object_deviation) 
+h = objects_heights[a]
+print(h)
 
