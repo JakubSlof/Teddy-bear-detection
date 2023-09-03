@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-x = np.array([15, 87, 138, 178, 206, 228, 246, 260, 274, 283, 291, 300, 307])
-y = np.array([40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
+x = np.array([15,87,138])#np.array([15, 87, 138, 178, 206, 228, 246, 260, 274, 283, 291, 300, 307])
+y = np.array([40,50,60])#np.array([40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
 
 def exponential_function(x, a, b, c):
     return a * np.exp(b * x) + c
