@@ -61,7 +61,7 @@ def UseModel(image,model):
                 distance = img_height-y2
                 print(distance)
                 distances.append(distance)
-                objects_ids.append(cls)
+          
 
 def ProcesData():
     a = objects_ids.index(0)#in list object_ids search for specific number and returns index of the number
@@ -94,3 +94,4 @@ model = YOLO('bearbest.pt')#loads the model
 LoadImageStorage('test3.png')
 UseModel(img,model)
 ProcesData()
+print('finished')
