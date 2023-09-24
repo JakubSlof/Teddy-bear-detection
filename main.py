@@ -27,7 +27,6 @@ def receve_data():
             break
         time.sleep(1)
     print('data reaceved')
-
 ##############################################################
 def camera_setup():
     global img_width
@@ -48,17 +47,11 @@ def read_data_fom_cam():
     print('datacomming ja boy')
     print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
 
-
-
 def process_data_fom_cam():
     center_x,center_y = x1+(x2/2),y1+(y2/2)
     distance = img_height-y2
     center_line = int(img_width/2)# x coordinates of image center
-
-
-
-
-
+    object_deviation = center_line-center_x
 
 def getting_cam_data():
     print('thread started')
@@ -89,8 +82,8 @@ def getting_cam_data():
         #  break
 #####################################################################################################################################################        
 camera_setup()
-comuniction_setup()
+#comuniction_setup()
 threading.Thread(target=getting_cam_data).start()#args=(5,) vstup do funkce ta carka tam musi bit
-send_data(1)#sends command to go thrue esko
-receve_data()#waits until its done and 69 comes back 
+#send_data(1)#sends command to go thrue esko
+#receve_data()#waits until its done and 69 comes back 
 process_data_fom_cam()
