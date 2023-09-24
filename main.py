@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import threading
 import time
 import serial
+import keyboard
 
 def comuniction_setup():
     port = 'COM5'
@@ -58,8 +59,8 @@ def process_data_fom_cam():
         print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
     if cls ==-1:
         print('no objects found')
-        send_data(2)
-        receve_data()
+        #send_data(2)#sends data to move robot to the next position 
+        #receve_data()
 
 def getting_cam_data():
     print('thread started')
@@ -95,7 +96,9 @@ def getting_cam_data():
 camera_setup()
 #comuniction_setup()
 threading.Thread(target=getting_cam_data).start()#args=(5,) vstup do funkce ta carka tam musi bit
+print("waiting for s to be pressed ")
+keyboard.wait("s")
+print('program started ')
 #send_data(1)#sends command to go thrue esko
-#receve_data()#waits until its done and 69 comes back
-time.sleep(8) 
+#receve_data()#waits until its done and 69 comes back 
 process_data_fom_cam()
