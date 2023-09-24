@@ -7,7 +7,10 @@ import matplotlib.pyplot as plt
 import keyboard
 import math
 
-
+global cap
+cap = cv2.VideoCapture(0)#inicialize camera 
+cap.set(3,640)#img width
+cap.set(4,480)#img height
 
 
 def LoadImageStorage(image):
@@ -19,11 +22,8 @@ def LoadImageStorage(image):
     img_height,img_width,img_channels = img.shape# gets some info from given picture
     print('image load sucess')
 
-def LoadImageCamera(cam_id):
+def LoadImageCamera():
     global img
-    cap = cv2.VideoCapture(cam_id)#inicialize camera 
-    cap.set(3,640)#img width
-    cap.set(4,480)#img height
     sucess, img = cap.read()#reads frame from camera
     global img_height
     global img_width
