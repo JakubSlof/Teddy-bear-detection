@@ -57,6 +57,8 @@ def process_data_fom_cam():
         object_deviation = center_line-center_x
         print("distance",distance,"object deviation ",object_deviation )
         print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
+        #send_data()
+        #receve_data()
     if cls ==-1:
         print('no objects found')
         #send_data(2)#sends data to move robot to the next position 
@@ -102,3 +104,7 @@ print('program started ')
 #send_data(1)#sends command to go thrue esko
 #receve_data()#waits until its done and 69 comes back 
 process_data_fom_cam()
+
+
+#todo
+#jak se budou cislovat komandy 
