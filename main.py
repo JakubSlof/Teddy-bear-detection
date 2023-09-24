@@ -31,8 +31,8 @@ def receve_data():
 def camera_setup():
     global img_width
     global img_height
-    img_height = 480
-    img_width = 720
+    img_height = 540
+    img_width = 960
     start_time = time.time() 
     global model
     global cap
@@ -48,10 +48,14 @@ def read_data_fom_cam():
     print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
 
 def process_data_fom_cam():
-    center_x,center_y = x1+(x2/2),y1+(y2/2)
-    distance = img_height-y2
-    center_line = int(img_width/2)# x coordinates of image center
-    object_deviation = center_line-center_x
+    print(cls)
+    if cls ==0:
+        center_x,center_y = x1+(x2/2),y1+(y2/2)
+        distance = img_height-y2
+        center_line = int(img_width/2)# x coordinates of image center
+        object_deviation = center_line-center_x
+        print("distance",distance,"object deviation ",object_deviation )
+        print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
 
 def getting_cam_data():
     print('thread started')
@@ -60,7 +64,10 @@ def getting_cam_data():
         results = model(img, stream = True)
         for r in results:
             boxes = r.boxes
-            for box in boxes:
+            global cls
+            cls = -1
+            for box in boxes:    
+                cls = int(box.cls[0])
                 global x1
                 global x2
                 global y1
@@ -85,5 +92,6 @@ camera_setup()
 #comuniction_setup()
 threading.Thread(target=getting_cam_data).start()#args=(5,) vstup do funkce ta carka tam musi bit
 #send_data(1)#sends command to go thrue esko
-#receve_data()#waits until its done and 69 comes back 
+#receve_data()#waits until its done and 69 comes back
+time.sleep(8) 
 process_data_fom_cam()
