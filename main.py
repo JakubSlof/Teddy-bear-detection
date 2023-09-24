@@ -49,13 +49,17 @@ def read_data_fom_cam():
 
 def process_data_fom_cam():
     print(cls)
-    if cls ==0:
+    if cls >-1:
         center_x,center_y = x1+(x2/2),y1+(y2/2)
         distance = img_height-y2
         center_line = int(img_width/2)# x coordinates of image center
         object_deviation = center_line-center_x
         print("distance",distance,"object deviation ",object_deviation )
         print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
+    if cls ==-1:
+        print('no objects found')
+        send_data(2)
+        receve_data()
 
 def getting_cam_data():
     print('thread started')
