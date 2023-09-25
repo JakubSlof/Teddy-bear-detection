@@ -9,7 +9,7 @@ import serial
 import keyboard
 
 def comuniction_setup():
-    port = 'COM5'
+    port = 'COM3'
     baund_rate = 115200
     global esp
     esp = serial.Serial(port,baund_rate,timeout=1)
@@ -95,15 +95,20 @@ def getting_cam_data():
         #if key==ord('q'):#pokud se zmackne klavesa q while true se brejkne 
         #  break
 #####################################################################################################################################################        
+comuniction_setup()
 camera_setup()
 #comuniction_setup()
 threading.Thread(target=getting_cam_data).start()#args=(5,) vstup do funkce ta carka tam musi bit
 print("waiting for s to be pressed ")
 keyboard.wait("s")
 print('program started ')
-#send_data(1)#sends command to go thrue esko
-#receve_data()#waits until its done and 69 comes back 
+send_data(1)#sends command to go thrue esko
+receve_data()#waits until its done and 69 comes back 
 process_data_fom_cam()
+time.sleep(4)
+send_data(1)#sends command to go thrue esko
+receve_data()#waits until its done and 69 comes back 
+print('program done')
 
 
 #todo
