@@ -37,7 +37,7 @@ def camera_setup():
     start_time = time.time() 
     global model
     global cap
-    model = YOLO('bearbest.pt')
+    model = YOLO('yolov8n.pt')
     cap=cv2.VideoCapture(0) #capture video from webcam
     cap.set(3,img_width)
     cap.set(4,img_height)
@@ -63,6 +63,7 @@ def process_data_fom_cam():
         print('no objects found')
         #send_data(2)#sends data to move robot to the next position 
         #receve_data()
+
 
 def getting_cam_data():
     print('thread started')
@@ -93,18 +94,24 @@ def getting_cam_data():
         #cv2.imshow('image',img)
         #key=cv2.waitKey(1)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
         #if key==ord('q'):#pokud se zmackne klavesa q while true se brejkne 
-        #  break
+        break
 ##################################################################################################################################################### niga       
-comuniction_setup()
-#camera_setup()
-#threading.Thread(target=getting_cam_data).start()#args=(5,) vstup do funkce ta carka tam musi bit
+#comuniction_setup()
+camera_setup()
+sucess, img = cap.read()
+results = model(img, stream = True)
+
+start_time = time.time() 
+getting_cam_data()
+end_time = time.time()
+print('setup done in:',end_time - start_time)
 #keyboard.wait("s")
-send_data(420)#sends command to go thrue esko
-receve_data()#waits until its done and 69 comes back 
+#send_data(420)#sends command to go thrue esko
+#receve_data()#waits until its done and 69 comes back 
 #process_data_fom_cam()
 #time.sleep(4)
-send_data(420)#sends command to go thrue esko
-receve_data()#waits until its done and 69 comes back 
+#send_data(420)#sends command to go thrue esko
+#receve_data()#waits until its done and 69 comes back 
 print('program done')
 
 
