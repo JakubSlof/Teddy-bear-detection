@@ -64,10 +64,46 @@ def process_data_fom_cam():
         #send_data(2)#sends data to move robot to the next position 
         #receve_data()
 
+def cam_read_test():
+    counter = 0
+    start_time = time.time() 
+    while(counter<60):
+        sucess, img = cap.read()
+        counter = counter+1
+        print(counter)
+    end_time = time.time()
+    print('in:',end_time - start_time)
+
+def cam_read():
+    global img
+    while(True):
+        sucess, img = cap.read()
+
+def use_model():
+    results = model(img, stream = True)
+    for r in results:
+        boxes = r.boxes
+        global cls
+        cls = -1
+        for box in boxes:    
+                cls = int(box.cls[0])
+                global x1
+                global x2
+                global y1
+                global y2
+                x1,y1,x2,y2 = box.xyxy [0] #x1 je pozice leveho horniho rohu objektu v ose x, x2 je velikost objektu v ose x v px 
+                x1,y1,x2,y2 = int(x1),int(y1),int(x2),int(y2)#prevedeni hodnot na int pro lepsi praci s nima 
+                #center_x,center_y = x1+(x2/2),y1+(y2/2)#vypocet stredu objektu pro lepsi lokalizaci medveda 
+                #center_x,center_y = int(center_x), int(center_y)#prevede hodnoty na int aby se dali pouzit ve funkci ukazujici stred 
+                #cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,255),3)#nakresli box okolo detekovane veci 
+                conf = box.conf[0]#jistota modelu 
+                conf = float(conf*100)
+                rounded_conf = int(conf)#zaokrouhli jistotu modelu na dve desetina mista 
 
 def getting_cam_data():
     print('thread started')
     while True:
+        global img
         sucess, img = cap.read()
         results = model(img, stream = True)
         for r in results:
@@ -98,13 +134,17 @@ def getting_cam_data():
 ##################################################################################################################################################### niga       
 #comuniction_setup()
 camera_setup()
-sucess, img = cap.read()
+threading.Thread(target = cam_read).start()
+time.sleep(5)
 results = model(img, stream = True)
-
-start_time = time.time() 
-getting_cam_data()
-end_time = time.time()
-print('setup done in:',end_time - start_time)
+print('start')
+time.sleep(10)
+use_model()
+process_data_fom_cam()
+#start_time = time.time() 
+#getting_cam_data()
+#end_time = time.time()
+#print('setup done in:',end_time - start_time)
 #keyboard.wait("s")
 #send_data(420)#sends command to go thrue esko
 #receve_data()#waits until its done and 69 comes back 
@@ -112,8 +152,10 @@ print('setup done in:',end_time - start_time)
 #time.sleep(4)
 #send_data(420)#sends command to go thrue esko
 #receve_data()#waits until its done and 69 comes back 
-print('program done')
-
+#print('program done')
+#cv2.imshow('image',img)
+#cv2.waitKey(10)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
+#cam_read_test()
 
 #todo
 #jak se budou cislovat komandy 
