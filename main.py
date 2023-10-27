@@ -9,7 +9,7 @@ import serial
 import keyboard
 
 def comuniction_setup():
-    port = 'COM6'
+    port = 'COM8'
     baund_rate = 115200
     global esp
     esp = serial.Serial(port,baund_rate,timeout=1)
@@ -37,16 +37,14 @@ def camera_setup():
     start_time = time.time() 
     global model
     global cap
-    model = YOLO('yolov8n.pt')
+    model = YOLO('yolov8s.pt')
     cap=cv2.VideoCapture(0) #capture video from webcam
     cap.set(3,img_width)
     cap.set(4,img_height)
     end_time = time.time()
     print('setup done in:',end_time - start_time)
 
-def read_data_fom_cam():
-    print('datacomming ja boy')
-    print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
+
 
 def process_data_fom_cam():
     print(cls)
@@ -80,67 +78,54 @@ def cam_read():
         sucess, img = cap.read()
 
 def use_model():
+    global distance
     results = model(img, stream = True)
     for r in results:
         boxes = r.boxes
-        global cls
-        cls = -1
+        #print(boxes)
         for box in boxes:    
                 cls = int(box.cls[0])
-                global x1
-                global x2
-                global y1
-                global y2
-                x1,y1,x2,y2 = box.xyxy [0] #x1 je pozice leveho horniho rohu objektu v ose x, x2 je velikost objektu v ose x v px 
-                x1,y1,x2,y2 = int(x1),int(y1),int(x2),int(y2)#prevedeni hodnot na int pro lepsi praci s nima 
-                #center_x,center_y = x1+(x2/2),y1+(y2/2)#vypocet stredu objektu pro lepsi lokalizaci medveda 
-                #center_x,center_y = int(center_x), int(center_y)#prevede hodnoty na int aby se dali pouzit ve funkci ukazujici stred 
-                #cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,255),3)#nakresli box okolo detekovane veci 
-                conf = box.conf[0]#jistota modelu 
-                conf = float(conf*100)
-                rounded_conf = int(conf)#zaokrouhli jistotu modelu na dve desetina mista 
+                if cls == 77:
+                    x1,y1,x2,y2 = box.xyxy [0] #x1 je pozice leveho horniho rohu objektu v ose x, x2 je velikost objektu v ose x v px 
+                    x1,y1,x2,y2 = int(x1),int(y1),int(x2),int(y2)#prevedeni hodnot na int pro lepsi praci s nima 
+                    confidence = box.conf[0]#jistota modelu 
+                    confidence = float(confidence)
+                    confidence = round(confidence,2)
+                    cv2.rectangle(img, (x1,y1),(x2,y2),(0,255,255),5)
+                    distance = img_height-y2
+                    center_x = int((x1+x2)/2)
+                    center_line = int(img_width/2)# x coordinates of image center
+                    deviation = -(center_line-center_x)
+                    cv2.line(img, (0,y2),(img_width,y2),(0,255,0), thickness=2)
+                    cv2.line(img, (480,540),(480,0),(255,0,0),thickness=2)
+                    cv2.line(img, (center_x,540),(center_x,0),(255,0,0),thickness=2)
+                    print(distance)
+                    print(deviation)
+                
+                
 
-def getting_cam_data():
-    print('thread started')
-    while True:
-        global img
-        sucess, img = cap.read()
-        results = model(img, stream = True)
-        for r in results:
-            boxes = r.boxes
-            global cls
-            cls = -1
-            for box in boxes:    
-                cls = int(box.cls[0])
-                global x1
-                global x2
-                global y1
-                global y2
-                x1,y1,x2,y2 = box.xyxy [0] #x1 je pozice leveho horniho rohu objektu v ose x, x2 je velikost objektu v ose x v px 
-                x1,y1,x2,y2 = int(x1),int(y1),int(x2),int(y2)#prevedeni hodnot na int pro lepsi praci s nima 
-                #center_x,center_y = x1+(x2/2),y1+(y2/2)#vypocet stredu objektu pro lepsi lokalizaci medveda 
-                #center_x,center_y = int(center_x), int(center_y)#prevede hodnoty na int aby se dali pouzit ve funkci ukazujici stred 
-                #cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,255),3)#nakresli box okolo detekovane veci 
-                conf = box.conf[0]#jistota modelu 
-                conf = float(conf*100)
-                rounded_conf = int(conf)#zaokrouhli jistotu modelu na dve desetina mista 
-                #print('confidence:',rounded_conf)
-                #class names 
-                #cv2.circle(img, (center_x,center_y),10, (255,0,255), thickness=-1)     
-        #cv2.imshow('image',img)
-        #key=cv2.waitKey(1)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
-        #if key==ord('q'):#pokud se zmackne klavesa q while true se brejkne 
-        break
+
 ##################################################################################################################################################### niga       
-#comuniction_setup()
+comuniction_setup()
 camera_setup()
 threading.Thread(target = cam_read).start()
-time.sleep(5)
-results = model(img, stream = True)
-print('start')
 time.sleep(10)
-use_model()
-process_data_fom_cam()
+sucess, obr = cap.read()
+results = model(obr)
+print('test done')
+time.sleep(1)
+distances=[]
+for i in range(16):
+    receve_data()
+    use_model()
+    cv2.imshow('image',img)
+    #cv2.waitKey(8000)
+    distances.append(distance)
+    send_data(1)
+print(distances)
+
+
+#####process_data_fom_cam()
 #start_time = time.time() 
 #getting_cam_data()
 #end_time = time.time()
@@ -154,8 +139,8 @@ process_data_fom_cam()
 #receve_data()#waits until its done and 69 comes back 
 #print('program done')
 #cv2.imshow('image',img)
-#cv2.waitKey(10)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
+#cv2.waitKey(5000)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
 #cam_read_test()
-
+cv2.destroyAllWindows()
 #todo
 #jak se budou cislovat komandy 
