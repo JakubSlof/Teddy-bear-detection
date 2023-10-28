@@ -44,24 +44,6 @@ def camera_setup():
     end_time = time.time()
     print('setup done in:',end_time - start_time)
 
-
-
-def process_data_fom_cam():
-    print(cls)
-    if cls >-1:
-        center_x,center_y = x1+(x2/2),y1+(y2/2)
-        distance = img_height-y2
-        center_line = int(img_width/2)# x coordinates of image center
-        object_deviation = center_line-center_x
-        print("distance",distance,"object deviation ",object_deviation )
-        print('X=',x1,'Y=',y1,'W=',x2,'H=',y2)
-        #send_data()
-        #receve_data()
-    if cls ==-1:
-        print('no objects found')
-        #send_data(2)#sends data to move robot to the next position 
-        #receve_data()
-
 def cam_read_test():
     counter = 0
     start_time = time.time() 
@@ -79,6 +61,7 @@ def cam_read():
 
 def use_model():
     global distance
+    global deviation
     results = model(img, stream = True)
     for r in results:
         boxes = r.boxes
@@ -106,7 +89,7 @@ def use_model():
 
 
 ##################################################################################################################################################### niga       
-comuniction_setup()
+#comuniction_setup()
 camera_setup()
 threading.Thread(target = cam_read).start()
 time.sleep(10)
@@ -115,32 +98,22 @@ results = model(obr)
 print('test done')
 time.sleep(1)
 distances=[]
-for i in range(16):
-    receve_data()
+deviations=[]
+for i in range(15):
+    #receve_data()
     use_model()
     cv2.imshow('image',img)
-    #cv2.waitKey(8000)
+    if distance >100:
+        cm_dis = 1.0052*np.exp(0.0117*distance)+35.7412
+    if distance <=100:
+        cm_dis = 0.15873015873015872*distance + 18.73015873015873
+    print("distamce to object:",cm_dis,"cm")
+    deviation_angle = np.sin(deviation/(((distance+118)**2 + deviation**2)**0.5)) 
+    print("deviation angle:",np.rad2deg(deviation_angle),"°")
     distances.append(distance)
-    send_data(1)
+    deviations.append(deviation)
+    cv2.waitKey(8000)
+    #send_data(1)
 print(distances)
-
-
-#####process_data_fom_cam()
-#start_time = time.time() 
-#getting_cam_data()
-#end_time = time.time()
-#print('setup done in:',end_time - start_time)
-#keyboard.wait("s")
-#send_data(420)#sends command to go thrue esko
-#receve_data()#waits until its done and 69 comes back 
-#process_data_fom_cam()
-#time.sleep(4)
-#send_data(420)#sends command to go thrue esko
-#receve_data()#waits until its done and 69 comes back 
-#print('program done')
-#cv2.imshow('image',img)
-#cv2.waitKey(5000)#delay takze to vyhodnocuje jen jeden frame za sekundu pro odlehceni 
-#cam_read_test()
+print(deviations)
 cv2.destroyAllWindows()
-#todo
-#jak se budou cislovat komandy 
