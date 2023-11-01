@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 # Define the data points
-x = np.array([-118,8,71])
-y = np.array([0,20,30])
+x = np.array([2,77])
+y = np.array([30,40])
 
 # Fit a curve to the data points
 model = LinearRegression()

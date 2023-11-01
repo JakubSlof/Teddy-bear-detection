@@ -9,7 +9,7 @@ import serial
 import keyboard
 
 def comuniction_setup():
-    port = 'COM8'
+    port = 'COM6'
     baund_rate = 115200
     global esp
     esp = serial.Serial(port,baund_rate,timeout=1)
@@ -89,7 +89,7 @@ def use_model():
 
 
 ##################################################################################################################################################### niga       
-#comuniction_setup()
+comuniction_setup()
 camera_setup()
 threading.Thread(target = cam_read).start()
 time.sleep(10)
@@ -100,20 +100,20 @@ time.sleep(1)
 distances=[]
 deviations=[]
 for i in range(15):
-    #receve_data()
+    receve_data()
     use_model()
     cv2.imshow('image',img)
     if distance >100:
-        cm_dis = 1.0052*np.exp(0.0117*distance)+35.7412
+        cm_dis = 6.3839*np.exp(0.0079*distance)+31.8671
     if distance <=100:
-        cm_dis = 0.15873015873015872*distance + 18.73015873015873
+        cm_dis = 0.13333333333333333*distance + 29.733333333333334
     print("distamce to object:",cm_dis,"cm")
     deviation_angle = np.sin(deviation/(((distance+118)**2 + deviation**2)**0.5)) 
     print("deviation angle:",np.rad2deg(deviation_angle),"°")
     distances.append(distance)
     deviations.append(deviation)
-    cv2.waitKey(8000)
-    #send_data(1)
+    cv2.waitKey(1000)
+    send_data(1)
 print(distances)
 print(deviations)
 cv2.destroyAllWindows()
