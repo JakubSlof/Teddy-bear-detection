@@ -20,7 +20,7 @@ def send_data(nunmber):
     print('data send')
 
 def receve_data():
-    line =0
+    line = 0
     while True:
         line= esp.readline().decode('utf-8').strip()
         print(line)
@@ -60,6 +60,9 @@ def cam_read():
         sucess, img = cap.read()
 
 def use_model():
+    global bear
+    bear = False
+    classes =[]
     global distance
     global deviation
     results = model(img, stream = True)
@@ -68,7 +71,9 @@ def use_model():
         #print(boxes)
         for box in boxes:    
                 cls = int(box.cls[0])
+                classes.append(cls)
                 if cls == 77:
+                    bear = True
                     x1,y1,x2,y2 = box.xyxy [0] #x1 je pozice leveho horniho rohu objektu v ose x, x2 je velikost objektu v ose x v px 
                     x1,y1,x2,y2 = int(x1),int(y1),int(x2),int(y2)#prevedeni hodnot na int pro lepsi praci s nima 
                     confidence = box.conf[0]#jistota modelu 
@@ -84,10 +89,8 @@ def use_model():
                     cv2.line(img, (center_x,540),(center_x,0),(255,0,0),thickness=2)
                     print(distance)
                     print(deviation)
-                
-                
-
-
+                else:
+                    bear = False
 ##################################################################################################################################################### niga       
 comuniction_setup()
 camera_setup()
@@ -102,18 +105,19 @@ deviations=[]
 for i in range(15):
     receve_data()
     use_model()
-    cv2.imshow('image',img)
-    if distance >100:
-        cm_dis = 6.3839*np.exp(0.0079*distance)+31.8671
-    if distance <=100:
-        cm_dis = 0.13333333333333333*distance + 29.733333333333334
-    print("distamce to object:",cm_dis,"cm")
-    deviation_angle = np.sin(deviation/(((distance+118)**2 + deviation**2)**0.5)) 
-    print("deviation angle:",np.rad2deg(deviation_angle),"°")
-    distances.append(distance)
-    deviations.append(deviation)
-    cv2.waitKey(1000)
-    send_data(1)
+    if bear==True:
+        cv2.imshow('image',img)
+        if distance >100:
+            cm_dis = 6.3839*np.exp(0.0079*distance)+31.8671
+        if distance <=100:
+            cm_dis = 0.13333333333333333*distance + 29.733333333333334
+        print("distamce to object:",cm_dis,"cm")
+        deviation_angle = np.sin(deviation/(((distance+118)**2 + deviation**2)**0.5)) 
+        print("deviation angle:",np.rad2deg(deviation_angle),"°")
+        distances.append(distance)
+        deviations.append(deviation)
+        cv2.waitKey(1000)
+        send_data(1)
 print(distances)
 print(deviations)
 cv2.destroyAllWindows()
